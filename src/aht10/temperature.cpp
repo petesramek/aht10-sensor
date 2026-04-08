@@ -1,4 +1,4 @@
-#include "temperature.h"
+#include <aht10/temperature.h>
 
 /// <summary>
 /// Constructs a Temperature object with the specified value and unit.

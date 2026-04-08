@@ -1,16 +1,16 @@
 #pragma once
 
 #include <ctime>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
 #include <linux/ioctl.h>
 #include <linux/types.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -18,7 +18,6 @@
 
 #include "command.h"
 #include "status.h"
-#include "mode.h"
 #include "temperature.h"
 #include "humidity.h"
 #include "result.h"
@@ -85,9 +84,9 @@ namespace Aht10 {
 		};
 
 		/// <summary>
-		/// Stores a 16-bit unsigned integer representing an address.
+		/// Stores an 8-bit unsigned integer representing an I2C address.
 		/// </summary>
-		uint16_t m_address;
+		uint8_t m_address;
 
 		/// <summary>
 		/// A fixed-size array of three 8-bit unsigned integers.
@@ -129,7 +128,7 @@ namespace Aht10 {
 		/// <returns>
 		/// True if the expected status is reached within the specified iterations, false otherwise.
 		/// </returns>
-		bool waitForStatus(Status expected, int maxIterations = 5, long waitInterval = 10000000L) const;
+		bool waitForStatus(Status expected, int maxIterations = 10, long waitInterval = 10000000L) const;
 
 		/// <summary>
 		/// Reads data from the sensor into the provided buffer.
@@ -138,17 +137,6 @@ namespace Aht10 {
 		/// True if the read operation is successful, false otherwise.
 		/// </returns>
 		Aht10::Status getStatus() const;
-
-		/// <summary>
-		///Sets the current operating mode.
-		/// </summary>
-		/// <param name="mode">
-		/// The mode to set.
-		/// </param>
-		/// <returns>
-		/// True if the mode was set successfully; false otherwise.
-		/// </returns>
-		bool setMode(Mode mode);
 
 	public:
 		/// <summary>
@@ -161,6 +149,11 @@ namespace Aht10 {
 		/// Whether to use an alternate address for the device. Defaults to false.
 		/// </param>
 		Sensor(std::string device, bool useAlternateAddress = false);
+
+		Sensor(const Sensor&) = delete;
+		Sensor& operator=(const Sensor&) = delete;
+		Sensor(Sensor&&) = delete;
+		Sensor& operator=(Sensor&&) = delete;
 
 		/// <summary>
 		/// Retrieves the humidity value in the specified unit.

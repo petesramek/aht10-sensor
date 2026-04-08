@@ -11,7 +11,7 @@ namespace Aht10 {
         /// <summary>
 		/// Sensor status is unknown or not initialized.
         /// </summary>
-        Unknown = 0x00,
+        None = 0x00,
 
         /// <summary>
         /// Sensor is calibrated and ready for operation.

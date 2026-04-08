@@ -1,8 +1,7 @@
-#include "address.h"
-#include "sensor.h"
-#include "mode.h"
-#include "temperature.h"
-#include "result.h"
+#include <aht10/address.h>
+#include <aht10/sensor.h>
+#include <aht10/temperature.h>
+#include <aht10/result.h>
 
 #include <stdexcept>
 #include <memory>
@@ -26,37 +25,20 @@
 /// True if the expected status is reached within the allowed iterations; otherwise, false.
 /// </returns>
 bool Aht10::Sensor::waitForStatus(Status expected, int maxIterations, long waitInterval) const {
-	const struct timespec time[1] = { 0, waitInterval };
+	const struct timespec ts = { 0, waitInterval };
 
-	while (Aht10::Sensor::getSystemData() & Status::Busy && maxIterations > 0) {
-		nanosleep(time, NULL);
+	while (maxIterations > 0 && (getStatus() & Status::Busy)) {
+		nanosleep(&ts, NULL);
 		maxIterations--;
 	}
 
-	if (!(Aht10::Sensor::getSystemData() & expected)) {
-		return false;
+	const Status current = getStatus();
+
+	if (expected == Status::Ready) {
+		return !(current & Status::Busy);
 	}
 
-	return true;
-}
-
-/// <summary>
-/// Sets the operating mode of the Aht10 sensor.
-/// </summary>
-/// <param name="mode">
-/// The mode to set for the sensor.
-/// </param>
-/// <returns>
-/// True if the mode was set successfully; false otherwise.
-/// </returns>
-bool Aht10::Sensor::setMode(Mode mode) {
-	m_write_buffer[0] = mode;
-
-	if (write(m_fd, m_write_buffer, 1) != 1) {
-		return false;
-	}
-
-	if (!Aht10::Sensor::waitForStatus(Status::Ready)) {
+	if (!(current & expected)) {
 		return false;
 	}
 
@@ -73,7 +55,7 @@ bool Aht10::Sensor::setMode(Mode mode) {
 /// If true, use the alternative I2C address; otherwise, use the default address.
 /// </param>
 Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
-	if (strlen(&device[0]) < 1) {
+	if (device.empty()) {
 		throw std::invalid_argument("Device name cannot be empty.");
 	}
 
@@ -81,7 +63,7 @@ Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
 		throw std::invalid_argument("Device name must start with '/dev/i2c-'");
 	}
 
-	m_fd = 0;
+	m_fd = -1;
 	m_device = device;
 	m_address = useAlternativeAddress ? Address::ALTERNATIVE : Address::DEFAULT;
 	m_current_measurement = nullptr;
@@ -99,6 +81,11 @@ Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
 bool Aht10::Sensor::initialize(bool calibrate) {
 	std::cout << "Device opening..." << std::endl;
 
+	if (m_fd >= 0) {
+		close(m_fd);
+		m_fd = -1;
+	}
+
 	m_fd = open(m_device.c_str(), O_RDWR);
 
 	if (m_fd < 0) {
@@ -107,8 +94,14 @@ bool Aht10::Sensor::initialize(bool calibrate) {
 	}
 	if (ioctl(m_fd, I2C_SLAVE, m_address) < 0) {
 		std::cerr << "Could not set I2C device address: " << strerror(errno) << std::endl;
+		close(m_fd);
+		m_fd = -1;
 		throw std::runtime_error("I2C address set failed.");
 	}
+
+	// Wait for the sensor to power on per the AHT10 datasheet (>= 40 ms)
+	const struct timespec power_on_delay = { 0, 40000000L };
+	nanosleep(&power_on_delay, NULL);
 
 	std::cout << "Device opened..." << std::endl;
 
@@ -128,14 +121,11 @@ bool Aht10::Sensor::initialize(bool calibrate) {
 bool Aht10::Sensor::calibrate() {
 	std::cout << "Calibration starting..." << std::endl;
 
-	if (!setMode(Mode::Calibration)) {
-		std::cerr << "Calibration failed..." << std::endl;
-		return false;
-	}
+	m_write_buffer[0] = Command::Initialize;
+	m_write_buffer[1] = Command::Calibrate;
+	m_write_buffer[2] = Command::Empty;
 
-	m_write_buffer[0] = Command::Calibrate;
-
-	if (write(m_fd, m_write_buffer, 1) != 1 || !Aht10::Sensor::waitForStatus(Status::Calibrated)) {
+	if (write(m_fd, m_write_buffer, 3) != 3 || !Aht10::Sensor::waitForStatus(Status::Calibrated)) {
 		std::cerr << "Calibration failed..." << std::endl;
 		return false;
 	}
@@ -164,7 +154,7 @@ bool Aht10::Sensor::measure() {
 
 	std::cout << "Read starting..." << std::endl;
 
-	if (read(m_fd, m_read_buffer, 6) != 6 || !(m_read_buffer[0] & Status::Ready)) {
+	if (read(m_fd, m_read_buffer, 6) != 6 || (m_read_buffer[0] & Status::Busy)) {
 		std::cerr << "Read failed..." << std::endl;
 		return false;
 	}
@@ -194,17 +184,23 @@ bool Aht10::Sensor::measure() {
 /// </returns>
 Aht10::Temperature Aht10::Sensor::getTemperature(Temperature::Unit unit) const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
+	const double celsius = m_current_measurement->temperature * 200.0 / (1 << 20) - 50.0;
+
 	switch (unit) {
 	case Temperature::Unit::Celsius:
-		return Temperature::create(m_current_measurement->temperature * 200.0 / (1 << 20) - 50, unit);
+		return Temperature::create(celsius, unit);
 	case Temperature::Unit::Farenhiet:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) * 1.8, unit);
+		return Temperature::create(celsius * 1.8 + 32.0, unit);
 	case Temperature::Unit::Kelvin:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) + 273.15, unit);
+		return Temperature::create(celsius + 273.15, unit);
 	case Temperature::Unit::Rankine:
-		return Temperature::create(((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) + 273.15) * 1.8, unit);
+		return Temperature::create((celsius + 273.15) * 1.8, unit);
 	case Temperature::Unit::Reaumur:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) * 0.8, unit);
+		return Temperature::create(celsius * 0.8, unit);
 	default:
 		return Temperature::create(m_current_measurement->temperature, Temperature::Unit::Raw);
 	};
@@ -218,6 +214,10 @@ Aht10::Temperature Aht10::Sensor::getTemperature(Temperature::Unit unit) const
 /// </returns>
 time_t Aht10::Sensor::getTimestamp() const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
 	return m_current_measurement->timestamp;
 }
 
@@ -232,6 +232,10 @@ time_t Aht10::Sensor::getTimestamp() const
 /// </returns>
 Aht10::Humidity Aht10::Sensor::getHumidity(Humidity::Unit unit) const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
 	switch (unit) {
 	case Humidity::Unit::Percent:
 		return Humidity::create(m_current_measurement->humidity * 100.0 / (1 << 20), unit);
@@ -283,7 +287,17 @@ void Aht10::Sensor::reset() {
 
 	m_write_buffer[0] = Command::Reset;
 
-	if (write(m_fd, m_write_buffer, 1) != 1 || !Aht10::Sensor::waitForStatus(Status::Ready)) {
+	if (write(m_fd, m_write_buffer, 1) != 1) {
+		std::cerr << "Reset failed..." << std::endl;
+		std::cout << "Reset finished..." << std::endl;
+		return;
+	}
+
+	// Wait for the sensor to complete its reset per the AHT10 datasheet (>= 20 ms)
+	const struct timespec reset_delay = { 0, 20000000L };
+	nanosleep(&reset_delay, NULL);
+
+	if (!Aht10::Sensor::waitForStatus(Status::Ready)) {
 		std::cerr << "Reset failed..." << std::endl;
 	}
 
@@ -294,7 +308,7 @@ void Aht10::Sensor::reset() {
 /// Destroys the Sensor object and releases associated resources.
 /// </summary>
 Aht10::Sensor::~Sensor() {
-	if (m_fd > 0) {
+	if (m_fd >= 0) {
 		close(m_fd);
 	}
 }
