@@ -1,116 +1,101 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../../src/AHT10.Shared/humidity.cpp"
+#include <catch2/catch_test_macros.hpp>
+#include "humidity.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Humidity]")
+{
+    double value = 0.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
 
-namespace AHT10 {
-	namespace Humidity {
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-		TEST_CLASS(Humidity)
-		{
-		public:
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Raw)
-			{
-				double value = 0.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Zero_And_Percent", "[Humidity]")
+{
+    double value = 0.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Raw");
-			}
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Percent)
-			{
-				double value = 0.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Zero_And_Ratio", "[Humidity]")
+{
+    double value = 10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Percent");
-			}
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Ratio)
-			{
-				double value = 10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Raw", "[Humidity]")
+{
+    double value = 10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Ratio");
-			}
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Raw)
-			{
-				double value = 10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Percent", "[Humidity]")
+{
+    double value = 10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Raw");
-			}
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Percent)
-			{
-				double value = 10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Ratio", "[Humidity]")
+{
+    double value = 10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Percent");
-			}
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Raw", "[Humidity]")
+{
+    double value = -10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Positive_Ten_And_Ratio)
-			{
-				double value = 10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-				Assert::AreEqual(value, humidity.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Ratio");
-			}
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Percent", "[Humidity]")
+{
+    double value = -10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Raw)
-			{
-				double value = -10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Raw;
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
+}
 
-				Assert::AreEqual(value, humidity.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Raw");
-			}
+TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Ratio", "[Humidity]")
+{
+    double value = -10.0;
+    Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Percent)
-			{
-				double value = -10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Percent;
+    Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
 
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
-
-				Assert::AreEqual(value, humidity.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Percent");
-			}
-
-
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Negative_Ten_And_Ratio)
-			{
-				double value = -10.0;
-				Aht10::Humidity::Unit unit = Aht10::Humidity::Unit::Ratio;
-
-				Aht10::Humidity humidity = Aht10::Humidity::create(value, unit);
-
-				Assert::AreEqual(value, humidity.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(humidity.unit), L"Unit should be Ratio");
-			}
-		};
-	}
+    REQUIRE(humidity.value == value);
+    REQUIRE(static_cast<uint8_t>(humidity.unit) == static_cast<uint8_t>(unit));
 }

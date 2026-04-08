@@ -1,213 +1,200 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../../src/AHT10.Shared/temperature.cpp"
+#include <catch2/catch_test_macros.hpp>
+#include "temperature.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
 
-namespace AHT10 {
-	namespace Temperature {
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-		TEST_CLASS(Temperature)
-		{
-		public:
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Zero_And_Raw)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Celsius", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Raw");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Celsius)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Farenhiet", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Celsius");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Farenhiet)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Kelvin", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Farenheit");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Kelvin)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Rankine", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Kelvin");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Rankine)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Reaumur", "[Temperature]")
+{
+    double value = 0.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Rankine");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Reaumur)
-			{
-				double value = 0.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Raw", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Reaumur");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Raw)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Celsius", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Raw");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Celsius)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Farenhiet", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Celsius");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Farenhiet)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Kelvin", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Farenheit");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Kelvin)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Rankine", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Kelvin");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Rankine)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Reaumur", "[Temperature]")
+{
+    double value = 10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Rankine");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Positive_Ten_And_Reaumur)
-			{
-				double value = 10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Raw", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be 10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Reaumur");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Raw)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Raw;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Celsius", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Raw");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Celsius)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Celsius;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Farenhiet", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Celsius");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Farenhiet)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Farenhiet;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Kelvin", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Farenheit");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Kelvin)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Kelvin;
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Rankine", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
 
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Kelvin");
-			}
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
+}
 
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Rankine)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Rankine;
+TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Reaumur", "[Temperature]")
+{
+    double value = -10.0;
+    Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
 
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
+    Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
 
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Rankine");
-			}
-
-			TEST_METHOD(Temperature_Create_Returns_Instance_With_Values_Negative_Ten_And_Reaumur)
-			{
-				double value = -10.0;
-				Aht10::Temperature::Unit unit = Aht10::Temperature::Unit::Reaumur;
-
-				Aht10::Temperature temperature = Aht10::Temperature::create(value, unit);
-
-				Assert::AreEqual(value, temperature.value, L"Value should be -10.0");
-				Assert::AreEqual(static_cast<uint8_t>(unit), static_cast<uint8_t>(temperature.unit), L"Unit should be Reaumur");
-			}
-		};
-	}
+    REQUIRE(temperature.value == value);
+    REQUIRE(static_cast<uint8_t>(temperature.unit) == static_cast<uint8_t>(unit));
 }

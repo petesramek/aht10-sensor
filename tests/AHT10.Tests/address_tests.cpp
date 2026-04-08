@@ -1,30 +1,18 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../../src/AHT10.Shared/address.h"
+#include <catch2/catch_test_macros.hpp>
+#include "address.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+TEST_CASE("Default_Adress_Equals_0x38", "[Address]")
+{
+    Aht10::Address address = Aht10::Address::DEFAULT;
 
-namespace AHT10 {
-	namespace Address {
+    REQUIRE(static_cast<int>(address) == 0x38);
+    REQUIRE(static_cast<uint8_t>(address) == static_cast<uint8_t>(Aht10::Address::DEFAULT));
+}
 
-			TEST_CLASS(Address)
-			{
-			public:
-				TEST_METHOD(Default_Adress_Equals_0x38)
-				{
-					Aht10::Address address = Aht10::Address::DEFAULT;
+TEST_CASE("Alternative_Adress_Equals_0x39", "[Address]")
+{
+    Aht10::Address address = Aht10::Address::ALTERNATIVE;
 
-					Assert::AreEqual(0x38, static_cast<int>(address), L"Default address should be 0x38");
-					Assert::AreEqual(static_cast<uint8_t>(Aht10::Address::DEFAULT), static_cast<uint8_t>(address), L"Default address should be 0x38");
-				}
-
-				TEST_METHOD(Alternative_Adress_Equals_0x39)
-				{
-					Aht10::Address address = Aht10::Address::ALTERNATIVE;
-
-					Assert::AreEqual(0x39, static_cast<int>(address), L"Alternative address should be 0x39");
-					Assert::AreEqual(static_cast<uint8_t>(Aht10::Address::ALTERNATIVE), static_cast<uint8_t>(address), L"Alternative address should be 0x39");
-				}
-			};
-		}
-	}
+    REQUIRE(static_cast<int>(address) == 0x39);
+    REQUIRE(static_cast<uint8_t>(address) == static_cast<uint8_t>(Aht10::Address::ALTERNATIVE));
+}

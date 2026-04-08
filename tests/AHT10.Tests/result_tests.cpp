@@ -1,29 +1,17 @@
-#include "pch.h"
-#include "CppUnitTest.h"
-#include "../../src/AHT10.Shared/result.cpp"
+#include <catch2/catch_test_macros.hpp>
+#include "result.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+TEST_CASE("Result_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Result]")
+{
+    time_t timestamp = 0;
+    Aht10::Humidity humidity = Aht10::Humidity::create(0.0, Aht10::Humidity::Unit::Raw);
+    Aht10::Temperature temperature = Aht10::Temperature::create(0.0, Aht10::Temperature::Unit::Raw);
 
-namespace AHT10 {
-	namespace Result {
+    Aht10::Result result = Aht10::Result::create(temperature, humidity, timestamp);
 
-		TEST_CLASS(Result)
-		{
-		public:
-			TEST_METHOD(Humidity_Create_Returns_Instance_With_Values_Zero_And_Raw)
-			{
-				time_t timestamp = 0;
-				Aht10::Humidity humidity = Aht10::Humidity::create(0.0, Aht10::Humidity::Unit::Raw);
-				Aht10::Temperature temperature = Aht10::Temperature::create(0.0, Aht10::Temperature::Unit::Raw);
-
-				Aht10::Result result = Aht10::Result::create(temperature, humidity, timestamp);
-
-				Assert::AreEqual(humidity.value, result.humidity.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(humidity.unit), static_cast<uint8_t>(result.humidity.unit), L"Unit should be Raw");
-				Assert::AreEqual(temperature.value, result.temperature.value, L"Value should be 0.0");
-				Assert::AreEqual(static_cast<uint8_t>(temperature.unit), static_cast<uint8_t>(result.temperature.unit), L"Unit should be Raw");
-				Assert::AreEqual(timestamp, result.timestamp, L"Timestamp should be 0");
-			}
-		};
-	}
+    REQUIRE(result.humidity.value == humidity.value);
+    REQUIRE(static_cast<uint8_t>(result.humidity.unit) == static_cast<uint8_t>(humidity.unit));
+    REQUIRE(result.temperature.value == temperature.value);
+    REQUIRE(static_cast<uint8_t>(result.temperature.unit) == static_cast<uint8_t>(temperature.unit));
+    REQUIRE(result.timestamp == timestamp);
 }

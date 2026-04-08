@@ -1,20 +1,76 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# AHT10 Sensor
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+A C++ library for reading temperature and humidity from the [AHT10](https://asairsensors.com/en-us/product/aht10/) sensor over I²C on Linux (e.g. Raspberry Pi).
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Features
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+- Read temperature in Celsius, Fahrenheit, Kelvin, Rankine, or Réaumur
+- Read humidity as a percentage or ratio
+- Configurable I²C address (default `0x38`, alternative `0x39`)
+- Soft reset and calibration support
+- Periodic measurement loop via `Cycle`
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Requirements
+
+- Linux with I²C support (`/dev/i2c-*`)
+- C++17 compiler (e.g. GCC 9+)
+- CMake 3.16+
+- `libi2c-dev` for building the sensor driver
+
+## Getting Started
+
+### Install dependencies (Debian/Ubuntu)
+
+```bash
+sudo apt-get update
+sudo apt-get install -y cmake g++ libi2c-dev
+```
+
+### Build
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+```
+
+### Run tests
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
+## Usage
+
+```cpp
+#include "sensor.h"
+
+Aht10::Sensor sensor("/dev/i2c-1");
+
+if (sensor.initialize(true)) {
+    if (sensor.measure()) {
+        auto result = sensor.getResult(
+            Aht10::Temperature::Unit::Celsius,
+            Aht10::Humidity::Unit::Percent);
+
+        // result.temperature.value  -> temperature in °C
+        // result.humidity.value     -> relative humidity in %
+        // result.timestamp          -> Unix timestamp of measurement
+    }
+}
+```
+
+## Project Structure
+
+```
+src/
+  AHT10.Shared/   # Library source (temperature, humidity, result, sensor, cycle)
+tests/
+  AHT10.Tests/    # Unit tests (Catch2)
+.github/
+  workflows/
+    ci.yml        # GitHub Actions CI workflow
+```
+
+## Contributing
+
+Pull requests are welcome. Please ensure all tests pass before submitting.
