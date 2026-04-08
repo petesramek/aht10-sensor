@@ -1,6 +1,6 @@
 #include "cycle.h"
 #include "sensor.h"
-#include <boost/asio/detail/chrono_time_traits.hpp>
+#include <unistd.h>
 
 Cycle::Cycle(Aht10::Sensor& sensor, Aht10::Temperature::Unit temperatureUnit, Aht10::Humidity::Unit humidityUnit, uint interval)
 	: m_sensor(sensor), m_temperatureUnit(temperatureUnit), m_humidityUnit(humidityUnit), m_interval(interval) { }
@@ -57,5 +57,4 @@ void Cycle::stop()
 Cycle::~Cycle()
 {
 	stop();
-	delete &m_sensor;
 }

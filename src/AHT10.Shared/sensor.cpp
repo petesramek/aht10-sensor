@@ -28,12 +28,12 @@
 bool Aht10::Sensor::waitForStatus(Status expected, int maxIterations, long waitInterval) const {
 	const struct timespec time[1] = { 0, waitInterval };
 
-	while (Aht10::Sensor::getSystemData() & Status::Busy && maxIterations > 0) {
+	while (maxIterations > 0 && (getStatus() & Status::Busy)) {
 		nanosleep(time, NULL);
 		maxIterations--;
 	}
 
-	if (!(Aht10::Sensor::getSystemData() & expected)) {
+	if (!(getStatus() & expected)) {
 		return false;
 	}
 
@@ -73,7 +73,7 @@ bool Aht10::Sensor::setMode(Mode mode) {
 /// If true, use the alternative I2C address; otherwise, use the default address.
 /// </param>
 Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
-	if (strlen(&device[0]) < 1) {
+	if (device.empty()) {
 		throw std::invalid_argument("Device name cannot be empty.");
 	}
 
@@ -81,7 +81,7 @@ Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
 		throw std::invalid_argument("Device name must start with '/dev/i2c-'");
 	}
 
-	m_fd = 0;
+	m_fd = -1;
 	m_device = device;
 	m_address = useAlternativeAddress ? Address::ALTERNATIVE : Address::DEFAULT;
 	m_current_measurement = nullptr;
@@ -98,6 +98,11 @@ Aht10::Sensor::Sensor(std::string device, bool useAlternativeAddress) {
 /// </returns>
 bool Aht10::Sensor::initialize(bool calibrate) {
 	std::cout << "Device opening..." << std::endl;
+
+	if (m_fd >= 0) {
+		close(m_fd);
+		m_fd = -1;
+	}
 
 	m_fd = open(m_device.c_str(), O_RDWR);
 
@@ -194,17 +199,23 @@ bool Aht10::Sensor::measure() {
 /// </returns>
 Aht10::Temperature Aht10::Sensor::getTemperature(Temperature::Unit unit) const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
+	const double celsius = m_current_measurement->temperature * 200.0 / (1 << 20) - 50.0;
+
 	switch (unit) {
 	case Temperature::Unit::Celsius:
-		return Temperature::create(m_current_measurement->temperature * 200.0 / (1 << 20) - 50, unit);
+		return Temperature::create(celsius, unit);
 	case Temperature::Unit::Farenhiet:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) * 1.8, unit);
+		return Temperature::create(celsius * 1.8 + 32.0, unit);
 	case Temperature::Unit::Kelvin:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) + 273.15, unit);
+		return Temperature::create(celsius + 273.15, unit);
 	case Temperature::Unit::Rankine:
-		return Temperature::create(((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) + 273.15) * 1.8, unit);
+		return Temperature::create((celsius + 273.15) * 1.8, unit);
 	case Temperature::Unit::Reaumur:
-		return Temperature::create((m_current_measurement->temperature * 200.0 / (1 << 20) - 50) * 0.8, unit);
+		return Temperature::create(celsius * 0.8, unit);
 	default:
 		return Temperature::create(m_current_measurement->temperature, Temperature::Unit::Raw);
 	};
@@ -218,6 +229,10 @@ Aht10::Temperature Aht10::Sensor::getTemperature(Temperature::Unit unit) const
 /// </returns>
 time_t Aht10::Sensor::getTimestamp() const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
 	return m_current_measurement->timestamp;
 }
 
@@ -232,6 +247,10 @@ time_t Aht10::Sensor::getTimestamp() const
 /// </returns>
 Aht10::Humidity Aht10::Sensor::getHumidity(Humidity::Unit unit) const
 {
+	if (!m_current_measurement) {
+		throw std::logic_error("No measurement available. Call measure() first.");
+	}
+
 	switch (unit) {
 	case Humidity::Unit::Percent:
 		return Humidity::create(m_current_measurement->humidity * 100.0 / (1 << 20), unit);
@@ -294,7 +313,7 @@ void Aht10::Sensor::reset() {
 /// Destroys the Sensor object and releases associated resources.
 /// </summary>
 Aht10::Sensor::~Sensor() {
-	if (m_fd > 0) {
+	if (m_fd >= 0) {
 		close(m_fd);
 	}
 }
