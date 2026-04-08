@@ -12,7 +12,6 @@ add_executable(aht10_tests
     address_tests.cpp
     command_tests.cpp
     humidity_tests.cpp
-    mode_tests.cpp
     result_tests.cpp
     status_tests.cpp
     temperature_tests.cpp

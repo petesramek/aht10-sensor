@@ -8,7 +8,6 @@ A C++ library for reading temperature and humidity from the [AHT10](https://asai
 - Read humidity as a percentage or ratio
 - Configurable I²C address (default `0x38`, alternative `0x39`)
 - Soft reset and calibration support
-- Cycle mode supported via `Aht10::Mode::Cycle`
 
 ## Requirements
 
@@ -71,17 +70,16 @@ All headers are individually includable under the `aht10/` prefix:
 | `<aht10/result.h>` | `Aht10::Result` (temperature + humidity + timestamp) |
 | `<aht10/address.h>` | `Aht10::Address` enum (`DEFAULT = 0x38`, `ALTERNATIVE = 0x39`) |
 | `<aht10/command.h>` | `Aht10::Command` enum (sensor command codes) |
-| `<aht10/mode.h>` | `Aht10::Mode` enum (`Normal`, `Cycle`, `Calibration`) |
 | `<aht10/status.h>` | `Aht10::Status` enum (`None`, `Calibrated`, `Ready`, `Busy`, `Error`) |
 
 ## Project Structure
 
 ```
 include/
-  aht10/          # Public headers (address, command, humidity, mode, result, sensor, status, temperature)
+  aht10/          # Public headers (address, command, humidity, result, sensor, status, temperature)
 src/
   aht10/          # Library implementation (humidity, result, sensor, temperature)
-tests/            # Unit tests (Catch2) — address, command, humidity, mode, result, status, temperature
+tests/            # Unit tests (Catch2) — address, command, humidity, result, status, temperature
 .github/
   workflows/
     ci.yml        # GitHub Actions CI workflow
