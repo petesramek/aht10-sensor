@@ -9,13 +9,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(aht10_tests
-    AHT10.Tests/address_tests.cpp
-    AHT10.Tests/command_tests.cpp
-    AHT10.Tests/humidity_tests.cpp
-    AHT10.Tests/mode_tests.cpp
-    AHT10.Tests/result_tests.cpp
-    AHT10.Tests/status_tests.cpp
-    AHT10.Tests/temperature_tests.cpp
+    address_tests.cpp
+    command_tests.cpp
+    humidity_tests.cpp
+    mode_tests.cpp
+    result_tests.cpp
+    status_tests.cpp
+    temperature_tests.cpp
 )
 
 target_link_libraries(aht10_tests PRIVATE aht10 Catch2::Catch2WithMain)

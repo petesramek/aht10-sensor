@@ -1,8 +1,8 @@
-#include "address.h"
-#include "sensor.h"
-#include "mode.h"
-#include "temperature.h"
-#include "result.h"
+#include <aht10/address.h>
+#include <aht10/sensor.h>
+#include <aht10/mode.h>
+#include <aht10/temperature.h>
+#include <aht10/result.h>
 
 #include <stdexcept>
 #include <memory>

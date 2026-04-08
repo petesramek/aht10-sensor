@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "humidity.h"
+#include <aht10/humidity.h>
 
 TEST_CASE("Humidity_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Humidity]")
 {

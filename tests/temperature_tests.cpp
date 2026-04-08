@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "temperature.h"
+#include <aht10/temperature.h>
 
 TEST_CASE("Temperature_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Temperature]")
 {

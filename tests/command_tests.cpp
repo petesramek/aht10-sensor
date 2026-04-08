@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "command.h"
+#include <aht10/command.h>
 
 TEST_CASE("Empty_Command_Equals_0x00", "[Command]")
 {

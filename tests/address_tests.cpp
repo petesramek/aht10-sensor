@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "address.h"
+#include <aht10/address.h>
 
 TEST_CASE("Default_Adress_Equals_0x38", "[Address]")
 {

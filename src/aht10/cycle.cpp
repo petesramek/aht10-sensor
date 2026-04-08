@@ -1,5 +1,5 @@
-#include "cycle.h"
-#include "sensor.h"
+#include <aht10/cycle.h>
+#include <aht10/sensor.h>
 #include <unistd.h>
 
 Cycle::Cycle(Aht10::Sensor& sensor, Aht10::Temperature::Unit temperatureUnit, Aht10::Humidity::Unit humidityUnit, uint interval)

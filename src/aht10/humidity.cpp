@@ -1,4 +1,4 @@
-#include "humidity.h"
+#include <aht10/humidity.h>
 
 /// <summary>
 /// Constructs a Humidity object with the specified value and unit.

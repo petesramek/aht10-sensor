@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "status.h"
+#include <aht10/status.h>
 
 TEST_CASE("None_Status_Equals_0x00", "[Status]")
 {

@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "mode.h"
+#include <aht10/mode.h>
 
 TEST_CASE("Normal_Mode_Equals_0x00", "[Mode]")
 {

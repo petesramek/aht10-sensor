@@ -1,4 +1,4 @@
-#include "result.h"
+#include <aht10/result.h>
 
 /// <summary>
 /// Represents the result of a measurement from the AHT10 sensor.

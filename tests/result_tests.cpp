@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "result.h"
+#include <aht10/result.h>
 
 TEST_CASE("Result_Create_Returns_Instance_With_Values_Zero_And_Raw", "[Result]")
 {
