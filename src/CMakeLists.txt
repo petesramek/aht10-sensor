@@ -3,7 +3,6 @@ add_library(aht10 STATIC
     aht10/humidity.cpp
     aht10/result.cpp
     aht10/sensor.cpp
-    aht10/cycle.cpp
 )
 
 target_include_directories(aht10 PUBLIC ${CMAKE_SOURCE_DIR}/include)
