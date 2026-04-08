@@ -18,7 +18,6 @@
 
 #include "command.h"
 #include "status.h"
-#include "mode.h"
 #include "temperature.h"
 #include "humidity.h"
 #include "result.h"
@@ -129,7 +128,7 @@ namespace Aht10 {
 		/// <returns>
 		/// True if the expected status is reached within the specified iterations, false otherwise.
 		/// </returns>
-		bool waitForStatus(Status expected, int maxIterations = 5, long waitInterval = 10000000L) const;
+		bool waitForStatus(Status expected, int maxIterations = 10, long waitInterval = 10000000L) const;
 
 		/// <summary>
 		/// Reads data from the sensor into the provided buffer.
@@ -138,17 +137,6 @@ namespace Aht10 {
 		/// True if the read operation is successful, false otherwise.
 		/// </returns>
 		Aht10::Status getStatus() const;
-
-		/// <summary>
-		///Sets the current operating mode.
-		/// </summary>
-		/// <param name="mode">
-		/// The mode to set.
-		/// </param>
-		/// <returns>
-		/// True if the mode was set successfully; false otherwise.
-		/// </returns>
-		bool setMode(Mode mode);
 
 	public:
 		/// <summary>

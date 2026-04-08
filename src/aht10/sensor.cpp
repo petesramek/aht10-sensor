@@ -1,6 +1,5 @@
 #include <aht10/address.h>
 #include <aht10/sensor.h>
-#include <aht10/mode.h>
 #include <aht10/temperature.h>
 #include <aht10/result.h>
 
@@ -26,37 +25,20 @@
 /// True if the expected status is reached within the allowed iterations; otherwise, false.
 /// </returns>
 bool Aht10::Sensor::waitForStatus(Status expected, int maxIterations, long waitInterval) const {
-	const struct timespec time[1] = { 0, waitInterval };
+	const struct timespec ts = { 0, waitInterval };
 
 	while (maxIterations > 0 && (getStatus() & Status::Busy)) {
-		nanosleep(time, NULL);
+		nanosleep(&ts, NULL);
 		maxIterations--;
 	}
 
-	if (!(getStatus() & expected)) {
-		return false;
+	const Status current = getStatus();
+
+	if (expected == Status::Ready) {
+		return !(current & Status::Busy);
 	}
 
-	return true;
-}
-
-/// <summary>
-/// Sets the operating mode of the Aht10 sensor.
-/// </summary>
-/// <param name="mode">
-/// The mode to set for the sensor.
-/// </param>
-/// <returns>
-/// True if the mode was set successfully; false otherwise.
-/// </returns>
-bool Aht10::Sensor::setMode(Mode mode) {
-	m_write_buffer[0] = mode;
-
-	if (write(m_fd, m_write_buffer, 1) != 1) {
-		return false;
-	}
-
-	if (!Aht10::Sensor::waitForStatus(Status::Ready)) {
+	if (!(current & expected)) {
 		return false;
 	}
 
@@ -112,8 +94,14 @@ bool Aht10::Sensor::initialize(bool calibrate) {
 	}
 	if (ioctl(m_fd, I2C_SLAVE, m_address) < 0) {
 		std::cerr << "Could not set I2C device address: " << strerror(errno) << std::endl;
+		close(m_fd);
+		m_fd = -1;
 		throw std::runtime_error("I2C address set failed.");
 	}
+
+	// Wait for the sensor to power on per the AHT10 datasheet (>= 40 ms)
+	const struct timespec power_on_delay = { 0, 40000000L };
+	nanosleep(&power_on_delay, NULL);
 
 	std::cout << "Device opened..." << std::endl;
 
@@ -133,14 +121,11 @@ bool Aht10::Sensor::initialize(bool calibrate) {
 bool Aht10::Sensor::calibrate() {
 	std::cout << "Calibration starting..." << std::endl;
 
-	if (!setMode(Mode::Calibration)) {
-		std::cerr << "Calibration failed..." << std::endl;
-		return false;
-	}
+	m_write_buffer[0] = Command::Initialize;
+	m_write_buffer[1] = Command::Calibrate;
+	m_write_buffer[2] = Command::Empty;
 
-	m_write_buffer[0] = Command::Calibrate;
-
-	if (write(m_fd, m_write_buffer, 1) != 1 || !Aht10::Sensor::waitForStatus(Status::Calibrated)) {
+	if (write(m_fd, m_write_buffer, 3) != 3 || !Aht10::Sensor::waitForStatus(Status::Calibrated)) {
 		std::cerr << "Calibration failed..." << std::endl;
 		return false;
 	}
@@ -169,7 +154,7 @@ bool Aht10::Sensor::measure() {
 
 	std::cout << "Read starting..." << std::endl;
 
-	if (read(m_fd, m_read_buffer, 6) != 6 || !(m_read_buffer[0] & Status::Ready)) {
+	if (read(m_fd, m_read_buffer, 6) != 6 || (m_read_buffer[0] & Status::Busy)) {
 		std::cerr << "Read failed..." << std::endl;
 		return false;
 	}
@@ -302,7 +287,17 @@ void Aht10::Sensor::reset() {
 
 	m_write_buffer[0] = Command::Reset;
 
-	if (write(m_fd, m_write_buffer, 1) != 1 || !Aht10::Sensor::waitForStatus(Status::Ready)) {
+	if (write(m_fd, m_write_buffer, 1) != 1) {
+		std::cerr << "Reset failed..." << std::endl;
+		std::cout << "Reset finished..." << std::endl;
+		return;
+	}
+
+	// Wait for the sensor to complete its reset per the AHT10 datasheet (>= 20 ms)
+	const struct timespec reset_delay = { 0, 20000000L };
+	nanosleep(&reset_delay, NULL);
+
+	if (!Aht10::Sensor::waitForStatus(Status::Ready)) {
 		std::cerr << "Reset failed..." << std::endl;
 	}
 
