@@ -146,7 +146,7 @@ namespace Aht10 {
 		/// The name or identifier of the device to connect to.
 		/// </param>
 		/// <param name="useAlternativeAddress">
-		/// Whether to use an alternate address for the device. Defaults to false.
+		/// Whether to use an alternative address for the device. Defaults to false.
 		/// </param>
 		Sensor(std::string device, bool useAlternativeAddress = false);
 
